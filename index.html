@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Peserta Reuni</h1>
+            </div>
+            <div class="col d-flex justify-content-end align-items-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add User</button>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Please fill the form!</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="userForm" class="needs-validation" novalidate>
+                                <div class="mb-3">
+                                    <label for="lblnama" class="col-form-label">Nama:</label>
+                                    <input type="text" class="form-control" id="lblnama" required>
+                                    <div class="invalid-feedback">Nama wajib diisi!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lblkontak" class="col-form-label">Kontak:</label>
+                                    <input type="text" class="form-control" id="lblkontak" required>
+                                    <div class="invalid-feedback">Form wajib diisi!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lblangkatan" class="col-form-label">Angkatan:</label>
+                                    <input type="number" class="form-control" id="lblangkatan" required>
+                                    <div class="invalid-feedback">Angkatan harus berupa angka!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lblacara" class="col-form-label">Acara:</label>
+                                    <input type="text" class="form-control" id="lblacara" required>
+                                    <div class="invalid-feedback">Form wajib diisi!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lbllokasi" class="col-form-label">Lokasi:</label>
+                                    <input type="text" class="form-control" id="lbllokasi" required>
+                                    <div class="invalid-feedback">Form wajib diisi!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lbltanggal" class="col-form-label">Tanggal:</label>
+                                    <input type="date" class="form-control" id="lbltanggal" required>
+                                    <div class="invalid-feedback">Form wajib diisi!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lblstatus" class="col-form-label">Status:</label>
+                                    <input type="text" class="form-control" id="lblstatus" required>
+                                    <div class="invalid-feedback">Form wajib diisi!</div>
+                                </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button onclick="insertUser()" type="button" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center">No.</th>
+                    <th class="text-center">Nama</th>
+                    <th class="text-center">Kontak</th>
+                    <th class="text-center">Angkatan</th>
+                    <th class="text-center">Acara</th>
+                    <th class="text-center">Lokasi</th>
+                    <th class="text-center">Tanggal</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody id="tablePeserta"></tbody>
+        </table>
+    </div>
+    
+    <script>
+        function renderTable(){
+            fetch('http://localhost:8000/api/crud')
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+
+                if(result.status == 200){
+                    let tablePeserta = document.getElementById('tablePeserta');
+                    let element = ``;
+
+                    if(result.data.length == 0){
+                        element = `
+                            <tr>
+                                <td colspan="4" class"text-center">No users found</td>
+                            </tr>
+                        `;
+                    }
+
+                    result.data.map((item, key) =>{
+                        element += `
+                            <tr key="${key}">
+                                <td class="text-center">${key + 1}</td>
+                                <td>${item.nama}</td>
+                                <td class="text-center">${item.kontak}</td>
+                                <td class="text-center">${item.angkatan}</td>
+                                <td class="text-center">${item.acara}</td>
+                                <td class="text-center">${item.lokasi}</td>
+                                <td class="text-center">${item.tanggal}</td>
+                                <td class="text-center">${item.status}</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUser-${item.id}">
+                                    Delete
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="deleteUser-${item.id}" tabindex="-1" aria-labelledby="deleteUser-${item.id}Label" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="deleteUser-${item.id}Label">Delete</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure want to delete?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                            <button onclick="deleteUser(${item.id})" type="button" class="btn btn-primary">Yes</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    tablePeserta.innerHTML = element;
+                }
+                else{
+                    console.error(result.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        }
+
+        renderTable();
+
+        function insertUser(){
+            let form = document.getElementById('userForm');
+            
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            let nama = document.getElementById('lblnama').value;
+            let kontak = document.getElementById('lblkontak').value;
+            let angkatan = document.getElementById('lblangkatan').value;
+            let acara = document.getElementById('lblacara').value;
+            let lokasi = document.getElementById('lbllokasi').value;
+            let tanggal = document.getElementById('lbltanggal').value;
+            let status = document.getElementById('lblstatus').value;
+
+            let data = {
+                nama: nama,
+                kontak: kontak,
+                angkatan: parseInt(angkatan),
+                acara: acara,
+                lokasi: lokasi,
+                tanggal: tanggal,
+                status: status
+            };
+
+            fetch(`http://localhost:8000/api/crud/create.php`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                renderTable();
+                form.reset();
+                form.classList.remove('was-validated');
+
+                let modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+                modal.hide();
+            })
+            .catch(error => console.error(error));
+        }
+
+        
+        
+        function deleteUser(id){
+            console.log(id);
+
+            fetch(`http://localhost:8000/api/crud/delete.php?id=${id}`, {
+                method: 'DELETE'
+            }).then(response => response.json())
+            .then(result => {
+                console.log(result);
+                renderTable();
+                document.getElementsByClassName('modal-backdrop')[0].remove();
+            });
+        }
+
+        
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+  </body>
+</html>
