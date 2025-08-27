@@ -59,12 +59,12 @@
                                     <input type="text" class="form-control" id="lblstatus" required>
                                     <div class="invalid-feedback">Form wajib diisi!</div>
                                 </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button onclick="insertUser()" type="button" class="btn btn-primary">Save</button>
+                                </div>
                                 </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button onclick="insertUser()" type="button" class="btn btn-primary">Save</button>
-                            </div>
+                            </div>  
                         </div>
                     </div>
                 </div>
@@ -121,11 +121,69 @@
                                 <td class="text-center">${item.tanggal}</td>
                                 <td class="text-center">${item.status}</td>
                                 <td>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUser-${item.id}">
-                                    Delete
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateUser-${item.id}">
+                                    Update
                                     </button>
 
                                     <!-- Modal -->
+                                    <div class="modal fade" id="updateUser-${item.id}" tabindex="-1" aria-labelledby="updateUser-${item.id}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="updateUser-${item.id}">Update User</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form id="updateForm" class="needs-validation" novalidate>
+                                                        <div class="mb-3">
+                                                            <label for="new_nama" class="col-form-label">Nama:</label>
+                                                            <input value="${item.nama}" type="text" class="form-control" id="new_nama${item.id}" required>
+                                                            <div class="invalid-feedback">Nama wajib diisi!</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="new_kontak" class="col-form-label">Kontak:</label>
+                                                            <input value="${item.kontak}" type="text" class="form-control" id="new_kontak${item.id}" required>
+                                                            <div class="invalid-feedback">Form wajib diisi!</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="new_angkatan" class="col-form-label">Angkatan:</label>
+                                                            <input value="${item.angkatan}" type="number" class="form-control" id="new_angkatan${item.id}" required>
+                                                            <div class="invalid-feedback">Angkatan harus berupa angka!</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="new_acara" class="col-form-label">Acara:</label>
+                                                            <input value="${item.acara}" type="text" class="form-control" id="new_acara${item.id}" required>
+                                                            <div class="invalid-feedback">Form wajib diisi!</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="new_lokasi" class="col-form-label">Lokasi:</label>
+                                                            <input value="${item.lokasi}" type="text" class="form-control" id="new_lokasi${item.id}" required>
+                                                            <div class="invalid-feedback">Form wajib diisi!</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="new_tanggal" class="col-form-label">Tanggal:</label>
+                                                            <input value="${item.tanggal}" type="date" class="form-control" id="new_tanggal${item.id}" required>
+                                                            <div class="invalid-feedback">Form wajib diisi!</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="new_status" class="col-form-label">Status:</label>
+                                                            <input value="${item.status}" type="text" class="form-control" id="new_status${item.id}" required>
+                                                            <div class="invalid-feedback">Form wajib diisi!</div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button onclick="updateUser(${item.id})" type="button" class="btn btn-primary">Save</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUser-${item.id}">
+                                    Delete
+                                    </button>
                                     <div class="modal fade" id="deleteUser-${item.id}" tabindex="-1" aria-labelledby="deleteUser-${item.id}Label" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -161,6 +219,8 @@
         }
 
         renderTable();
+
+        
 
         function insertUser(){
             let form = document.getElementById('userForm');
@@ -202,6 +262,53 @@
 
                 let modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
                 modal.hide();
+            })
+            .catch(error => console.error(error));
+        }
+
+        
+
+        function updateUser(id){
+            console.log(id);
+            let form = document.getElementById('updateForm');
+            
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            let nama = document.getElementById('new_nama' + id).value;
+            let kontak = document.getElementById('new_kontak' + id).value;
+            let angkatan = document.getElementById('new_angkatan' + id).value;
+            let acara = document.getElementById('new_acara' + id).value;
+            let lokasi = document.getElementById('new_lokasi' + id).value;
+            let tanggal = document.getElementById('new_tanggal' + id).value;
+            let status = document.getElementById('new_status' + id).value;
+
+            let data = {
+                nama: nama,
+                kontak: kontak,
+                angkatan: parseInt(angkatan),
+                acara: acara,
+                lokasi: lokasi,
+                tanggal: tanggal,
+                status: status
+            };
+
+            fetch(`http://localhost:8000/api/crud/update.php?id=${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                renderTable();
+                form.reset();
+                form.classList.remove('was-validated');
+
+                document.getElementsByClassName('modal-backdrop')[0].remove();
+                document.getElementsByClassName('btn-close')[0].click();
             })
             .catch(error => console.error(error));
         }
